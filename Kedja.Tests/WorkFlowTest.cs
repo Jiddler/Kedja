@@ -17,8 +17,8 @@ namespace Kedja.Tests {
 
         [TestMethod]
         public void End_To_End() {
-            var step2 = new Step2();
-            var step3 = new Step3();
+            var step2 = new GenericStep();
+            var step3 = new GenericStep();
             _instance.AddStep<GenericStep, bool>(branch => {
                 branch.When(x => x == true).AddStep(step2);
                 branch.When(x => x == false).AddStep(step3);
@@ -122,12 +122,6 @@ namespace Kedja.Tests {
         public void Execute() {
             _sync.WaitOne();
         }
-    }
-
-    public class Step3 : GenericStep {
-    }
-
-    public class Step2 : GenericStep {
     }
 
     public class GenericStep : IStep, IStep<bool> {
