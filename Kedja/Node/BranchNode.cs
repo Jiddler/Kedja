@@ -26,6 +26,10 @@ namespace Kedja.Node {
             return AddStep(WorkFlowContext.TypeFactory.Create<T>());
         }
 
+        public IBranchNode<TReturn> AddStep(Action perform) {
+            return AddStep(new DelegateStep(perform));
+        }
+
         public IBranchNode<TReturn> AddStep(IStep instance) {
             var node = new LeafNode(instance, this);
             _nodes.Add(node);
@@ -34,6 +38,10 @@ namespace Kedja.Node {
 
         public IBranchNode<TReturn> AddStep<T, TXReturn>(Action<IBranchNode<TXReturn>> branch) where T : IStep<TXReturn> {
             return AddStep<T, TXReturn>(WorkFlowContext.TypeFactory.Create<T>(), branch);
+        }
+
+        public IBranchNode<TReturn> AddStep<TXReturn>(Func<TXReturn> perform, Action<IBranchNode<TXReturn>> branch) {
+            return AddStep<DelegateStep<TXReturn>, TXReturn>(new DelegateStep<TXReturn>(perform), branch);
         }
 
         public IBranchNode<TReturn> AddStep<T, TXReturn>(IStep<TXReturn> instance, Action<IBranchNode<TXReturn>> branch) {

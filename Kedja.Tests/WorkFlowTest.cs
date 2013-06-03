@@ -45,6 +45,39 @@ namespace Kedja.Tests {
         }
 
         [TestMethod]
+        public void Add_Action_To_Workflow_Make_Sure_Executed() {
+            var executed = false;
+            _instance.AddStep(() => executed = true).Execute();
+            Assert.IsTrue(executed);
+        }
+
+        [TestMethod]
+        public void Add_Func_To_Workflow_Make_Sure_Executed() {
+            var executed = false;
+            _instance.AddStep(() => {
+                executed = true;
+                return true;
+            }, branch => {
+            }).Execute();
+
+            Assert.IsTrue(executed);
+        }
+
+        [TestMethod]
+        public void Add_Func_To_Sub_Workflow_Make_Sure_Executed() {
+            var executed = false;
+            _instance.AddStep<GenericStep, bool>(branch => branch.When(x => x).AddStep(() => true, ibranch => ibranch.When(x => x).AddStep(() => executed = true))).Execute();
+            Assert.IsTrue(executed);
+        }
+
+        [TestMethod]
+        public void Add_Action_To_Sub_Workflow_Make_Sure_Executed() {
+            var executed = false;
+            _instance.AddStep<GenericStep, bool>(branch => branch.When(x => x).AddStep(() => executed = true)).Execute();
+            Assert.IsTrue(executed);
+        }
+
+        [TestMethod]
         public void Add_Two_Instance_To_Workflow_Make_Sure_Executed() {
             var step1 = new GenericStep();
             var step2 = new GenericStep();

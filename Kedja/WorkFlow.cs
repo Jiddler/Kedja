@@ -21,6 +21,11 @@ namespace Kedja {
             return this;
         }
 
+        public IWorkFlow AddStep(Action perform) {
+            _rootNode.AddStep(perform);
+            return this;
+        }
+
         public IWorkFlow AddStep<TStep, TReturn>(Action<IBranchNode<TReturn>> branch) where TStep : IStep<TReturn> {
             _rootNode.AddStep<TStep, TReturn>(branch);
             return this;
@@ -28,6 +33,11 @@ namespace Kedja {
 
         public IWorkFlow AddStep<TStep, TReturn>(IStep<TReturn> instance, Action<IBranchNode<TReturn>> branch) {
             _rootNode.AddStep<TStep, TReturn>(instance, branch);
+            return this;
+        }
+
+        public IWorkFlow AddStep<TReturn>(Func<TReturn> perform, Action<IBranchNode<TReturn>> branch) {
+            _rootNode.AddStep(perform, branch);
             return this;
         }
 
