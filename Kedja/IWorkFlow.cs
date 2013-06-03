@@ -2,14 +2,17 @@
 using Kedja.Step;
 
 namespace Kedja {
-    public interface IWorkFlow {
-        IWorkFlow WithTypeFactory(ITypeFactory typeFactory);
+    public interface IWorkFlow<out TState> {
+        IWorkFlow<TState> WithTypeFactory(ITypeFactory typeFactory);
 
-        IWorkFlow AddStep<TStep>() where TStep : IStep;
-        IWorkFlow AddStep(IStep instance);
-        IWorkFlow AddStep<TStep, TReturn>(Action<IBranchNode<TReturn>> branch) where TStep : IStep<TReturn>;
-        IWorkFlow AddStep<TStep, TReturn>(IStep<TReturn> instance, Action<IBranchNode<TReturn>> branch);
-        IWorkFlow Wait(int ms);
+        IWorkFlow<TState> AddStep<TStep>() where TStep : IStep<TState>;
+        IWorkFlow<TState> AddStep(IStep<TState> instance);
+        IWorkFlow<TState> AddStep(Action<TState> perform);
+        IWorkFlow<TState> AddStep<TStep, TReturn>(Action<IBranchNode<TState, TReturn>> branch) where TStep : IStep<TState, TReturn>;
+        IWorkFlow<TState> AddStep<TStep, TReturn>(IStep<TState, TReturn> instance, Action<IBranchNode<TState, TReturn>> branch);
+        IWorkFlow<TState> AddStep<TReturn>(Func<TState, TReturn> perform, Action<IBranchNode<TState, TReturn>> branch);
+        
+        IWorkFlow<TState> Wait(int ms);
 
         void Execute();
         void Cancel();

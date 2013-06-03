@@ -60,7 +60,6 @@
     <Compile Include="Step\ICancelableStep.cs" />
     <Compile Include="Step\IStep.cs" />
     <Compile Include="Step\DelegateStep.cs" />
-    <Compile Include="Step\StepExecutor.cs" />
     <Compile Include="Utility\DictionaryList.cs" />
     <Compile Include="WorkFlow.cs" />
     <Compile Include="WorkflowCanceledException.cs" />

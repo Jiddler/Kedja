@@ -2,10 +2,10 @@ using System;
 using Kedja.Step;
 
 namespace Kedja.Node {
-    internal class LeafNode : AbstractNode {
-        private readonly Func<IStep> _factory;
+    internal class LeafNode<TState> : AbstractNode<TState> {
+        private readonly Func<IStep<TState>> _factory;
 
-        public LeafNode(AbstractNode parent, Func<IStep> factory) : base(parent) {
+        public LeafNode(AbstractNode<TState> parent, Func<IStep<TState>> factory) : base(parent) {
             _factory = factory;
         }
 
@@ -13,14 +13,14 @@ namespace Kedja.Node {
             if(WorkFlowContext.Canceled)
                 throw new WorkflowCanceledException();
 
-            IStep step = _factory();
+            var step = _factory();
 
             var result = WorkFlowContext.Lock(() => WorkFlowContext.Path.AddLast(step));
             if(!result) {
                 return;
             }
 
-            step.Execute();
+            step.Execute(WorkFlowContext.State);
             WorkFlowContext.Path.RemoveLast();
         }
     }

@@ -1,10 +1,10 @@
 using Kedja.Instruction;
 
 namespace Kedja.Node {
-    internal class BreakNode : AbstractNode {
+    internal class BreakNode<TState> : AbstractNode<TState> {
         private readonly int _levels;
 
-        public BreakNode(AbstractNode parent, int levels) : base(parent) {
+        public BreakNode(AbstractNode<TState> parent, int levels) : base(parent) {
             _levels = levels + 1;
         }
 

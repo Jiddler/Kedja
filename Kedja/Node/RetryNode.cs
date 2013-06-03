@@ -1,11 +1,11 @@
 using Kedja.Instruction;
 
 namespace Kedja.Node {
-    internal class RetryNode : AbstractNode {
+    internal class RetryNode<TState> : AbstractNode<TState> {
         private readonly int _maxRetries;
         private int _retries;
 
-        public RetryNode(AbstractNode parent, int maxRetries) : base(parent) {
+        public RetryNode(AbstractNode<TState> parent, int maxRetries) : base(parent) {
             _maxRetries = maxRetries;
         }
 

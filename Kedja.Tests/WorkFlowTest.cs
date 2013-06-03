@@ -8,11 +8,12 @@ using Moq;
 namespace Kedja.Tests {
     [TestClass]
     public class WorkFlowTest {
-        private WorkFlow _instance;
+        private WorkFlow<object> _instance;
+        private readonly object _state = new object();
 
         [TestInitialize]
         public void Initialize() {
-            _instance = new WorkFlow();
+            _instance = new WorkFlow<object>(_state);
         }
 
         [TestMethod]
@@ -28,7 +29,24 @@ namespace Kedja.Tests {
         }
 
         [TestMethod]
+        public void State_Object_Passed_On_Execution() {
+            object calledWithState = null;
+            _instance.AddStep(state => calledWithState = state).Execute();
+            Assert.AreSame(_state, calledWithState);
+        }
+
+        [TestMethod]
         public void TypeFactory_Invoked_When_No_Instance_Given() {
+            var typeFactory = Mock.Of<ITypeFactory>();
+            _instance
+                .WithTypeFactory(typeFactory)
+                .AddStep<bool>(state => false, branch => branch.When(x => x == true).AddStep<GenericStep>()).Execute();
+            
+            Mock.Get(typeFactory).Verify(tf => tf.Create<GenericStep>(), Times.Never());
+        }
+
+        [TestMethod]
+        public void TypeFactory_Only_Invoked_When_Step_Executed() {
             var step = new GenericStep();
             
             var typeFactory = Mock.Of<ITypeFactory>(tf => tf.Create<GenericStep>() == step);
@@ -47,14 +65,14 @@ namespace Kedja.Tests {
         [TestMethod]
         public void Add_Action_To_Workflow_Make_Sure_Executed() {
             var executed = false;
-            _instance.AddStep(() => executed = true).Execute();
+            _instance.AddStep(state => executed = true).Execute();
             Assert.IsTrue(executed);
         }
 
         [TestMethod]
         public void Add_Func_To_Workflow_Make_Sure_Executed() {
             var executed = false;
-            _instance.AddStep(() => {
+            _instance.AddStep(state => {
                 executed = true;
                 return true;
             }, branch => {
@@ -66,14 +84,14 @@ namespace Kedja.Tests {
         [TestMethod]
         public void Add_Func_To_Sub_Workflow_Make_Sure_Executed() {
             var executed = false;
-            _instance.AddStep<GenericStep, bool>(branch => branch.When(x => x).AddStep(() => true, ibranch => ibranch.When(x => x).AddStep(() => executed = true))).Execute();
+            _instance.AddStep<GenericStep, bool>(branch => branch.When(x => x).AddStep(state => true, ibranch => ibranch.When(x => x).AddStep(state => executed = true))).Execute();
             Assert.IsTrue(executed);
         }
 
         [TestMethod]
         public void Add_Action_To_Sub_Workflow_Make_Sure_Executed() {
             var executed = false;
-            _instance.AddStep<GenericStep, bool>(branch => branch.When(x => x).AddStep(() => executed = true)).Execute();
+            _instance.AddStep<GenericStep, bool>(branch => branch.When(x => x).AddStep(state => executed = true)).Execute();
             Assert.IsTrue(executed);
         }
 
@@ -145,29 +163,29 @@ namespace Kedja.Tests {
         }
     }
 
-    public class CancelableStep : IStep {
+    public class CancelableStep : IStep<object> {
         private readonly ManualResetEvent _sync = new ManualResetEvent(false);
 
         public void Cancel() {
             _sync.Set();
         }
 
-        public void Execute() {
+        public void Execute(object state) {
             _sync.WaitOne();
         }
     }
 
-    public class GenericStep : IStep, IStep<bool> {
+    public class GenericStep : IStep<object>, IStep<object, bool> {
         public bool Executed { get; set; }
 
         protected int ExecutedCount { get; private set; }
 
-        bool IStep<bool>.Execute() {
-            Execute();
+        bool IStep<object, bool>.Execute(object state) {
+            Execute(state);
             return true;
         }
 
-        public void Execute() {
+        public void Execute(object state) {
             ExecutedCount += 1;
             Executed = true;
         }
@@ -177,12 +195,12 @@ namespace Kedja.Tests {
         }
     }
 
-    public class RetryableStep : IStep<bool> {
+    public class RetryableStep : IStep<object, bool> {
         public bool Executed { get; set; }
 
         public int ExecutedCount { get; private set; }
 
-        public bool Execute() {
+        public bool Execute(object state) {
             ExecutedCount += 1;
             if(ExecutedCount == 1)
                 return false;

@@ -3,40 +3,44 @@ using Kedja.Node;
 using Kedja.Step;
 
 namespace Kedja {
-    public class WorkFlow : IWorkFlow {
-        private readonly WorkFlowContext _workFlowContext = new WorkFlowContext();
-        private readonly ContainerNode _rootNode;
+    public class WorkFlow<TState> : IWorkFlow<TState> {
+        private readonly WorkFlowContext<TState> _workFlowContext = new WorkFlowContext<TState>();
+        private readonly ContainerNode<TState> _rootNode;
         
         public WorkFlow() {
-            _rootNode = new ContainerNode(_workFlowContext);
+            _rootNode = new ContainerNode<TState>(_workFlowContext);
         }
-       
-        public IWorkFlow AddStep<TStep>() where TStep : IStep {
+
+        public WorkFlow(TState state) : this() {
+            _workFlowContext.State = state;
+        }
+
+        public IWorkFlow<TState> AddStep<TStep>() where TStep : IStep<TState> {
             _rootNode.AddStep<TStep>();
             return this;
         }
 
-        public IWorkFlow AddStep(IStep instance) {
+        public IWorkFlow<TState> AddStep(IStep<TState> instance) {
             _rootNode.AddStep(instance);
             return this;
         }
 
-        public IWorkFlow AddStep(Action perform) {
+        public IWorkFlow<TState> AddStep(Action<TState> perform) {
             _rootNode.AddStep(perform);
             return this;
         }
 
-        public IWorkFlow AddStep<TStep, TReturn>(Action<IBranchNode<TReturn>> branch) where TStep : IStep<TReturn> {
+        public IWorkFlow<TState> AddStep<TStep, TReturn>(Action<IBranchNode<TState, TReturn>> branch) where TStep : IStep<TState, TReturn> {
             _rootNode.AddStep<TStep, TReturn>(branch);
             return this;
         }
 
-        public IWorkFlow AddStep<TStep, TReturn>(IStep<TReturn> instance, Action<IBranchNode<TReturn>> branch) {
+        public IWorkFlow<TState> AddStep<TStep, TReturn>(IStep<TState, TReturn> instance, Action<IBranchNode<TState, TReturn>> branch) {
             _rootNode.AddStep<TStep, TReturn>(instance, branch);
             return this;
         }
 
-        public IWorkFlow AddStep<TReturn>(Func<TReturn> perform, Action<IBranchNode<TReturn>> branch) {
+        public IWorkFlow<TState> AddStep<TReturn>(Func<TState, TReturn> perform, Action<IBranchNode<TState, TReturn>> branch) {
             _rootNode.AddStep(perform, branch);
             return this;
         }
@@ -52,12 +56,12 @@ namespace Kedja {
             _rootNode.Cancel();
         }
 
-        public IWorkFlow Wait(int ms) {
+        public IWorkFlow<TState> Wait(int ms) {
             _rootNode.Wait(ms);
             return this;
         }
 
-        public IWorkFlow WithTypeFactory(ITypeFactory typeFactory) {
+        public IWorkFlow<TState> WithTypeFactory(ITypeFactory typeFactory) {
             _workFlowContext.TypeFactory = typeFactory;
             return this;
         }

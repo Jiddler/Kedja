@@ -1,52 +1,60 @@
 using System;
-using System.Collections.Generic;
 using Kedja.Instruction;
 using Kedja.Step;
 
 namespace Kedja.Node {
-    internal class ContainerNode : AbstractNode, IContainerNode {
-        private readonly List<INode> _nodes = new List<INode>();
+    internal class ContainerNode<TState> : AbstractNode<TState>, IContainerNode<TState> {
+        private readonly NodeCollection<TState> _nodes;
 
-        internal ContainerNode(AbstractNode parent) : base(parent) {
+        internal ContainerNode(AbstractNode<TState> parent) : base(parent) {
+            _nodes = new NodeCollection<TState>(this);
         }
 
-        internal ContainerNode(WorkFlowContext workFlowContext) : base(workFlowContext) {
+        internal ContainerNode(WorkFlowContext<TState> workFlowContext) : base(workFlowContext) {
+            _nodes = new NodeCollection<TState>(this);
         }
 
-        public IContainerNode AddStep<T>() where T : IStep {
-            var node = new LeafNode(this, () => WorkFlowContext.TypeFactory.Create<T>());
-            _nodes.Add(node);
+        public IContainerNode<TState> AddStep<T>() where T : IStep<TState> {
+            _nodes.AddLeafNode(() => WorkFlowContext.TypeFactory.Create<T>());
             return this;
         }
 
-        public IContainerNode AddStep(Action perform) {
-            var node = new LeafNode(this, () => new DelegateStep(perform));
-            _nodes.Add(node);
+        public IContainerNode<TState> AddStep(Action<TState> perform) {
+            _nodes.AddLeafNode(() => new DelegateStep<TState>(perform));
             return this;
         }
 
-        public IContainerNode AddStep(IStep instance) {
-            var node = new LeafNode(this, () => instance);
-            _nodes.Add(node);
+        public IContainerNode<TState> AddStep(IStep<TState> instance) {
+            _nodes.AddLeafNode(() => instance);
             return this;
         }
 
-        public IContainerNode AddStep<T, TReturn>(Action<IBranchNode<TReturn>> branch) where T : IStep<TReturn> {
-            var node = new BranchNode<TReturn>(this, () => WorkFlowContext.TypeFactory.Create<T>(), branch);
-            _nodes.Add(node);
+        public IContainerNode<TState> AddStep<T, TXReturn>(Action<IBranchNode<TState, TXReturn>> branch) where T : IStep<TState, TXReturn> {
+            _nodes.AddBranchNode(() => WorkFlowContext.TypeFactory.Create<T>(), branch);
             return this;
         }
 
-        public IContainerNode AddStep<T, TReturn>(IStep<TReturn> instance, Action<IBranchNode<TReturn>> branch) {
-            var node = new BranchNode<TReturn>(this, () => instance, branch);
-            _nodes.Add(node);
+        public IContainerNode<TState> AddStep<TXReturn>(Func<TState, TXReturn> perform, Action<IBranchNode<TState, TXReturn>> branch) {
+            _nodes.AddBranchNode(() => new DelegateStep<TState, TXReturn>(perform), branch);
             return this;
         }
 
-        public IContainerNode AddStep<TReturn>(Func<TReturn> perform, Action<IBranchNode<TReturn>> branch) {
-            var node = new BranchNode<TReturn>(this, () => new DelegateStep<TReturn>(perform), branch);
-            _nodes.Add(node);
-            return this;        
+        public IContainerNode<TState> AddStep<T, TXReturn>(IStep<TState, TXReturn> instance, Action<IBranchNode<TState, TXReturn>> branch) {
+            _nodes.AddBranchNode(() => instance, branch);
+            return this;
+        }
+
+        public IContainerNode<TState> Wait(int ms) {
+            _nodes.AddWait(ms);
+            return this;
+        }
+
+        public void Retry(int maxRetries = 1) {
+            _nodes.AddRetryNode(maxRetries);
+        }
+
+        public void Break(int levels = 1) {
+            _nodes.AddBreakNode(levels);
         }
 
         public override void Execute() {
@@ -62,19 +70,6 @@ namespace Kedja.Node {
             }
 
             WorkFlowContext.RemoveInstructions(this);
-        }
-
-        public void Retry(int maxRetries = 1) {
-            _nodes.Add(new RetryNode(this, maxRetries));
-        }
-
-        public void Break(int levels = 1) {
-            _nodes.Add(new BreakNode(this, levels));
-        }
-
-        public IContainerNode Wait(int ms) {
-            _nodes.Add(new WaitNode(this, ms));
-            return this;
         }
     }
 }

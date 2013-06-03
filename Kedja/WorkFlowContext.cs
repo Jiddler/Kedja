@@ -7,7 +7,7 @@ using Kedja.Step;
 using Kedja.Utility;
 
 namespace Kedja {
-    internal class WorkFlowContext {
+    internal class WorkFlowContext<T> {
         private readonly DictionaryList<INode, IFlowInstruction> _instructions = new DictionaryList<INode,IFlowInstruction>();
 
         public WorkFlowContext() : this(new DefaultTypeFactory()) {
@@ -21,6 +21,8 @@ namespace Kedja {
         public ITypeFactory TypeFactory { get; set; }
 
         public bool Canceled { get; set; }
+
+        public T State { get; set; }
 
         public LinkedList<ICancelableStep> Path { get; set; }
         
