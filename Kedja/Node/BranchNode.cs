@@ -52,9 +52,43 @@ namespace Kedja.Node {
             return this;
         }
 
+        public IBranchNode<TState, TReturn> AddStatelessStep(IStatelessStep step) {
+            _nodes.AddLeafNode(() => new StatelessStepWrapper<TState>(step));
+            return this;
+        }
+
+        public IBranchNode<TState, TReturn> AddStatelessStep<T>() where T : IStatelessStep {
+            _nodes.AddLeafNode(() => new StatelessStepWrapper<TState>(WorkFlowContext.TypeFactory.Create<T>()));
+            return this;
+        }
+
+        public IBranchNode<TState, TReturn> AddStatelessStep<T, TXReturn>(Action<IBranchNode<TState, TXReturn>> branch) where T : IStatelessStep<TXReturn> {
+            _nodes.AddBranchNode(() => new StatelessStepWrapper<TState, TXReturn>(WorkFlowContext.TypeFactory.Create<T>()), branch);
+            return this;
+        }
+
+        public IBranchNode<TState, TReturn> AddStatelessStep<T, TXReturn>(IStatelessStep<TXReturn> instance, Action<IBranchNode<TState, TXReturn>> branch) {
+            _nodes.AddBranchNode(() => new StatelessStepWrapper<TState, TXReturn>(instance), branch);
+            return this;
+        }
+
+        public IBranchNode<TState, TReturn> AddWorkFlow(IWorkFlowBuilder<TState> builder) {
+            _nodes.AddWorkFlowNode(() => builder);
+            return this;
+        }
+
+        public IBranchNode<TState, TReturn> AddWorkFlow<T>(Func<T> builder) where T : IWorkFlowBuilder<TState>{
+            _nodes.AddWorkFlowNode(() => WorkFlowContext.TypeFactory.Create<T>());
+            return this;
+        }
+
         public IBranchNode<TState, TReturn> Wait(int ms) {
             _nodes.AddWait(ms);
             return this;
+        }
+
+        public void Stop() {
+            _nodes.AddStop();
         }
 
         public override void Execute() {
@@ -100,6 +134,38 @@ namespace Kedja.Node {
 
         private bool ShouldExecuteNode(TReturn result, INode step) {
             return !_conditions.ContainsKey(step) || _conditions[step](result);
+        }
+    }
+
+    internal class StatelessStepWrapper<TState, TReturn> : IStep<TState, TReturn> {
+        private readonly IStatelessStep<TReturn> _instance;
+
+        public StatelessStepWrapper(IStatelessStep<TReturn> instance) {
+            _instance = instance;
+        }
+
+        public TReturn Execute(TState state) {
+            return _instance.Execute();
+        }
+
+        public void Cancel() {
+            _instance.Cancel();
+        }
+    }
+
+    internal class StatelessStepWrapper<TState> : IStep<TState> {
+        private readonly IStatelessStep _instance;
+
+        public StatelessStepWrapper(IStatelessStep instance) {
+            _instance = instance;
+        }
+
+        public void Execute(TState state) {
+            _instance.Execute();
+        }
+
+        public void Cancel() {
+            _instance.Cancel();
         }
     }
 }

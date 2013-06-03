@@ -15,6 +15,11 @@ namespace Kedja {
             _workFlowContext.State = state;
         }
 
+        public IWorkFlow<TState> AddLevel(Action<IContainerNode<TState>> branch) {
+            _rootNode.AddLevel(branch);
+            return this;
+        } 
+
         public IWorkFlow<TState> AddStep<TStep>() where TStep : IStep<TState> {
             _rootNode.AddStep<TStep>();
             return this;
@@ -42,6 +47,36 @@ namespace Kedja {
 
         public IWorkFlow<TState> AddStep<TReturn>(Func<TState, TReturn> perform, Action<IBranchNode<TState, TReturn>> branch) {
             _rootNode.AddStep(perform, branch);
+            return this;
+        }
+
+        public IWorkFlow<TState> AddStatelessStep(IStatelessStep step) {
+            _rootNode.AddStatelessStep(step);
+            return this;
+        }
+
+        public IWorkFlow<TState> AddStatelessStep<T>() where T : IStatelessStep {
+            _rootNode.AddStatelessStep<T>();
+            return this;
+        }
+
+        public IWorkFlow<TState> AddStatelessStep<T, TReturn>(IStatelessStep<TReturn> instance, Action<IBranchNode<TState, TReturn>> branch) {
+            _rootNode.AddStatelessStep<T, TReturn>(instance, branch);
+            return this;
+        }
+
+        public IWorkFlow<TState> AddStatelessStep<T, TReturn>(Action<IBranchNode<TState, TReturn>> branch) where T : IStatelessStep<TReturn> {
+            _rootNode.AddStatelessStep<T, TReturn>(branch);
+            return this;
+        }
+
+        public IWorkFlow<TState> AddWorkFlow(IWorkFlowBuilder<TState> builder) {
+            _rootNode.AddWorkFlow(builder);
+            return this;
+        }
+
+        public IWorkFlow<TState> AddWorkFlow<T>(Func<T> builder) where T : IWorkFlowBuilder<TState>{
+            _rootNode.AddWorkFlow(builder);
             return this;
         }
 

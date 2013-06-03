@@ -48,6 +48,12 @@ namespace Kedja.Node {
             return node;
         }
 
+        public IContainerNode<TState> AddLevelNode(Action<IContainerNode<TState>> branch) {
+            var node = new LevelNode<TState>(_node, branch);
+            _nodes.Add(node);
+            return node;
+        }
+
         public RetryNode<TState> AddRetryNode(int maxRetries) {
             var node = new RetryNode<TState>(_node, maxRetries);
             _nodes.Add(node);
@@ -60,12 +66,28 @@ namespace Kedja.Node {
             return node;
         }
 
+        public StopNode<TState> AddStop() {
+            var node = new StopNode<TState>(_node);
+            _nodes.Add(node);
+            return node;
+        }
+
+        public WorkFlowNode<TState> AddWorkFlowNode(Func<IWorkFlowBuilder<TState>> builder) {
+            var node = new WorkFlowNode<TState>(_node, builder);
+            _nodes.Add(node);
+            return node;
+        }
+
         public IEnumerator<INode> GetEnumerator() {
             return _nodes.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        public void Clear() {
+            _nodes.Clear();
         }
     }
 }

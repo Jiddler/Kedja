@@ -154,12 +154,70 @@ namespace Kedja.Tests {
         }
 
         [TestMethod]
+        public void Break_Out_Of_Level() {
+            var subStep1 = new GenericStep();
+            var subStep2 = new GenericStep();
+            _instance.AddLevel(branch => {
+                branch.AddStep(subStep1);
+                branch.Break(2);
+                })
+                .AddStep(subStep2)
+                .Execute();
+
+            Assert.IsTrue(subStep1.Executed);
+            Assert.IsFalse(subStep2.Executed);
+        }
+
+        [TestMethod]
         public void Wait() {
             var step = new GenericStep();
             var beforeExecute = DateTime.UtcNow;
             _instance.AddStep<GenericStep>().Wait(100).Execute();
 
             Assert.IsTrue((DateTime.UtcNow - beforeExecute).TotalMilliseconds >= 100);
+        }
+
+        [TestMethod]
+        public void Stop() {
+            var step = new GenericStep();
+            var subStep1 = new GenericStep();
+            var subStep2 = new GenericStep();
+            _instance.AddStep<GenericStep, bool>(step, branch => {
+                branch.Stop();
+                branch.AddStep(subStep1);
+            }).AddStep(subStep2).Execute();
+
+            Assert.IsTrue(step.Executed);
+            Assert.IsFalse(subStep1.Executed);
+            Assert.IsFalse(subStep2.Executed);
+        }
+
+        [TestMethod]
+        public void StatelessStep() {
+            var step = new StatelessStep();
+            _instance.AddStatelessStep(step).Execute();
+            Assert.IsTrue(step.Executed);
+        }
+
+        [TestMethod]
+        public void SubWorkFlow() {
+            var workFlowBuilder = new WorkFlowBuilder();
+            _instance.AddWorkFlow(workFlowBuilder).Execute();
+            Assert.IsTrue(workFlowBuilder.ExecutedStep);
+        }
+    }
+
+    public class WorkFlowBuilder : IWorkFlowBuilder<object> {
+        private readonly GenericStep _step;
+
+        public bool ExecutedStep { get { return _step.Executed; } }
+
+        public WorkFlowBuilder() {
+            _step = new GenericStep();
+        }
+
+        public void Build(IContainerNode<object> workFlow) {
+            workFlow.AddStep(_step);
         }
     }
 
@@ -210,6 +268,18 @@ namespace Kedja.Tests {
 
         public void Cancel() {
             
+        }
+    }
+
+    public class StatelessStep : IStatelessStep {
+        public bool Executed { get; private set; }
+
+        public void Cancel() {
+            
+        }
+
+        public void Execute() {
+            Executed = true;
         }
     }
 }

@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultTypeFactory.cs" />
+    <Compile Include="Extension\IBranchNodeExtensions.cs" />
     <Compile Include="IBranchNode.cs" />
     <Compile Include="IContainerNode.cs" />
     <Compile Include="Instruction\BreakInstruction.cs" />
@@ -47,17 +48,22 @@
     <Compile Include="Instruction\RetryInstruction.cs" />
     <Compile Include="ITypeFactory.cs" />
     <Compile Include="IWorkFlow.cs" />
+    <Compile Include="IWorkflowBuilder.cs" />
     <Compile Include="Node\AbstractNode.cs" />
     <Compile Include="Node\BranchNode.cs" />
     <Compile Include="Node\BreakNode.cs" />
     <Compile Include="Node\ContainerNode.cs" />
-    <Compile Include="Node\NodeCollection.cs" />
     <Compile Include="Node\WaitNode.cs" />
+    <Compile Include="Node\LevelNode.cs" />
+    <Compile Include="Node\NodeCollection.cs" />
+    <Compile Include="Node\StopNode.cs" />
+    <Compile Include="Node\WorkFlowNode.cs" />
     <Compile Include="Node\INode.cs" />
     <Compile Include="Node\LeafNode.cs" />
     <Compile Include="Node\RetryNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Step\ICancelableStep.cs" />
+    <Compile Include="Step\IStatelessStep.cs" />
     <Compile Include="Step\IStep.cs" />
     <Compile Include="Step\DelegateStep.cs" />
     <Compile Include="Utility\DictionaryList.cs" />

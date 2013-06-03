@@ -1,4 +1,5 @@
 using System;
+using Kedja.Instruction;
 using Kedja.Step;
 
 namespace Kedja.Node {

@@ -3,19 +3,11 @@ using Kedja.Instruction;
 using Kedja.Step;
 
 namespace Kedja.Node {
-    internal class ContainerNode<TState> : AbstractNode<TState>, IContainerNode<TState> {
+    internal class LevelNode<TState> : AbstractNode<TState>, IContainerNode<TState> {
         private readonly Action<IContainerNode<TState>> _branch;
         private readonly NodeCollection<TState> _nodes;
 
-        internal ContainerNode(AbstractNode<TState> parent) : base(parent) {
-            _nodes = new NodeCollection<TState>(this);
-        }
-
-        internal ContainerNode(WorkFlowContext<TState> workFlowContext) : base(workFlowContext) {
-            _nodes = new NodeCollection<TState>(this);
-        }
-
-        public ContainerNode(AbstractNode<TState> workFlowContext, Action<IContainerNode<TState>> branch) : base(workFlowContext) {
+        public LevelNode(AbstractNode<TState> workFlowContext, Action<IContainerNode<TState>> branch) : base(workFlowContext) {
             _nodes = new NodeCollection<TState>(this);
             _branch = branch;
         }
@@ -50,8 +42,8 @@ namespace Kedja.Node {
             return this;
         }
 
-        public IContainerNode<TState> AddLevel(Action<IContainerNode<TState>> branch) {
-            _nodes.AddLevelNode(branch);
+        public IContainerNode<TState> Wait(int ms) {
+            _nodes.AddWait(ms);
             return this;
         }
 
@@ -75,17 +67,12 @@ namespace Kedja.Node {
             return this;
         }
 
-        public IContainerNode<TState> Wait(int ms) {
-            _nodes.AddWait(ms);
-            return this;
-        }
-
         public IContainerNode<TState> AddWorkFlow(IWorkFlowBuilder<TState> builder) {
             _nodes.AddWorkFlowNode(() => builder);
             return this;
         }
 
-        public IContainerNode<TState> AddWorkFlow<T>(Func<T> builder) where T : IWorkFlowBuilder<TState>{
+        public IContainerNode<TState> AddWorkFlow<T>(Func<T> builder) where T : IWorkFlowBuilder<TState> {
             _nodes.AddWorkFlowNode(() => WorkFlowContext.TypeFactory.Create<T>());
             return this;
         }
@@ -106,10 +93,8 @@ namespace Kedja.Node {
             if(WorkFlowContext.Canceled)
                 throw new WorkflowCanceledException();
 
-            if(_branch != null) {
-                _nodes.Clear();
-                _branch(this);
-            }
+            _nodes.Clear();
+            _branch(this);
 
             foreach(var step in _nodes) {
                 step.Execute();
@@ -120,6 +105,11 @@ namespace Kedja.Node {
             }
 
             WorkFlowContext.RemoveInstructions(this);
+        }
+
+        public IContainerNode<TState> AddLevel(Action<IContainerNode<TState>> branch) {
+            _nodes.AddLevelNode(branch);
+            return this;
         }
     }
 }
