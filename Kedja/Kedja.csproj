@@ -51,6 +51,7 @@
     <Compile Include="Node\BranchNode.cs" />
     <Compile Include="Node\BreakNode.cs" />
     <Compile Include="Node\ContainerNode.cs" />
+    <Compile Include="Node\NodeCollection.cs" />
     <Compile Include="Node\WaitNode.cs" />
     <Compile Include="Node\INode.cs" />
     <Compile Include="Node\LeafNode.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="Step\ICancelableStep.cs" />
     <Compile Include="Step\IStep.cs" />
     <Compile Include="Step\DelegateStep.cs" />
+    <Compile Include="Step\StepExecutor.cs" />
     <Compile Include="Utility\DictionaryList.cs" />
     <Compile Include="WorkFlow.cs" />
     <Compile Include="WorkflowCanceledException.cs" />

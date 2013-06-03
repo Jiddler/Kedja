@@ -1,3 +1,4 @@
+using System;
 using Kedja.Step;
 
 namespace Kedja.Node {
@@ -18,7 +19,7 @@ namespace Kedja.Node {
             get { return _parent; }
         }
 
-        protected WorkFlowContext WorkFlowContext {
+        public WorkFlowContext WorkFlowContext {
             get { return _workFlowContext; }
         }
 
@@ -33,28 +34,6 @@ namespace Kedja.Node {
             if(current != null) {
                 current.Value.Cancel();
             }
-        }
-
-        protected void Execute(IStep step) {
-            var result = WorkFlowContext.Lock(() => WorkFlowContext.Path.AddLast(step));
-            if(!result) {
-                return;
-            }
-
-            step.Execute();
-            WorkFlowContext.Path.RemoveLast();
-        }
-
-        protected TReturn Execute<TReturn>(IStep<TReturn> step) {
-            var result = WorkFlowContext.Lock(() => WorkFlowContext.Path.AddLast(step));
-            if(!result) {
-                return default(TReturn);
-            }
-
-            var stepResult = step.Execute();
-            WorkFlowContext.Path.RemoveLast();
-
-            return stepResult;
         }
 
         public abstract void Execute();

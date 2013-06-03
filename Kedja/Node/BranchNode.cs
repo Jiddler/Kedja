@@ -5,53 +5,55 @@ using Kedja.Step;
 
 namespace Kedja.Node {
     internal class BranchNode<TReturn> : AbstractNode, IBranchNode<TReturn> {
-        private readonly IStep<TReturn> _step;
+        private readonly Func<IStep<TReturn>> _step;
         private readonly Action<IBranchNode<TReturn>> _branch;
         private readonly Dictionary<INode, Func<TReturn, bool>> _conditions = new Dictionary<INode, Func<TReturn, bool>>();
-        private readonly List<INode> _nodes = new List<INode>();
+        private readonly NodeCollection _nodes;
  
-        public BranchNode(AbstractNode parent, IStep<TReturn> step, Action<IBranchNode<TReturn>> branch) : base(parent) {
+        public BranchNode(AbstractNode parent, Func<IStep<TReturn>> step, Action<IBranchNode<TReturn>> branch) : base(parent) {
+            _nodes = new NodeCollection(this);
             _step = step;
             _branch = branch;
         }
 
         public IContainerNode When(Func<TReturn, bool> when) {
-            var node = new ContainerNode(this);
+            var node = _nodes.AddContainerNode();
             _conditions.Add(node, when);
-            _nodes.Add(node);
             return node;
         }
 
         public IBranchNode<TReturn> AddStep<T>() where T : IStep {
-            return AddStep(WorkFlowContext.TypeFactory.Create<T>());
+            _nodes.AddLeafNode(() => WorkFlowContext.TypeFactory.Create<T>());
+            return this;
         }
 
         public IBranchNode<TReturn> AddStep(Action perform) {
-            return AddStep(new DelegateStep(perform));
+            _nodes.AddLeafNode(() => new DelegateStep(perform));
+            return this;
         }
 
         public IBranchNode<TReturn> AddStep(IStep instance) {
-            var node = new LeafNode(instance, this);
-            _nodes.Add(node);
+            _nodes.AddLeafNode(() => instance);
             return this;
         }
 
         public IBranchNode<TReturn> AddStep<T, TXReturn>(Action<IBranchNode<TXReturn>> branch) where T : IStep<TXReturn> {
-            return AddStep<T, TXReturn>(WorkFlowContext.TypeFactory.Create<T>(), branch);
+            _nodes.AddBranchNode(() => WorkFlowContext.TypeFactory.Create<T>(), branch);
+            return this;
         }
 
         public IBranchNode<TReturn> AddStep<TXReturn>(Func<TXReturn> perform, Action<IBranchNode<TXReturn>> branch) {
-            return AddStep<DelegateStep<TXReturn>, TXReturn>(new DelegateStep<TXReturn>(perform), branch);
+            _nodes.AddBranchNode(() => new DelegateStep<TXReturn>(perform), branch);
+            return this;
         }
 
         public IBranchNode<TReturn> AddStep<T, TXReturn>(IStep<TXReturn> instance, Action<IBranchNode<TXReturn>> branch) {
-            var node = new BranchNode<TXReturn>(this, instance, branch);
-            _nodes.Add(node);
+            _nodes.AddBranchNode(() => instance, branch);
             return this;
         }
 
         public IBranchNode<TReturn> Wait(int ms) {
-            _nodes.Add(new WaitNode(this, ms));
+            _nodes.AddWait(ms);
             return this;
         }
 
@@ -61,29 +63,42 @@ namespace Kedja.Node {
             do {
                 WorkFlowContext.RemoveInstructions(this);
 
-                var result = Execute(_step);
-                ExecuteSubSteps(result);
+                var step = _step();
+                var result = ExecuteStep(step);
+                ExecuteNodes(result);
             } while(WorkFlowContext.HasInstruction<RetryInstruction>(this));
 
             WorkFlowContext.RemoveInstructions(this);
         }
 
-        private void ExecuteSubSteps(TReturn result) {
+        private TReturn ExecuteStep(IStep<TReturn> step) {
+            var result = WorkFlowContext.Lock(() => WorkFlowContext.Path.AddLast(step));
+            if(!result) {
+                return default(TReturn);
+            }
+
+            var stepResult = step.Execute();
+            WorkFlowContext.Path.RemoveLast();
+
+            return stepResult;
+        }
+
+        private void ExecuteNodes(TReturn result) {
             if(WorkFlowContext.Canceled)
                 throw new WorkflowCanceledException();
 
-            foreach(var step in _nodes) {
-                if(!ShouldRunStep(result, step))
+            foreach(var node in _nodes) {
+                if(!ShouldExecuteNode(result, node))
                     continue;
 
-                step.Execute();
+                node.Execute();
 
                 if(WorkFlowContext.HasInstruction<BreakInstruction>(this))
                     break;
             }
         }
 
-        private bool ShouldRunStep(TReturn result, INode step) {
+        private bool ShouldExecuteNode(TReturn result, INode step) {
             return !_conditions.ContainsKey(step) || _conditions[step](result);
         }
     }

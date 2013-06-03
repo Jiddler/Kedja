@@ -5,7 +5,7 @@ using Kedja.Step;
 
 namespace Kedja.Node {
     internal class ContainerNode : AbstractNode, IContainerNode {
-        protected readonly List<INode> _nodes = new List<INode>();
+        private readonly List<INode> _nodes = new List<INode>();
 
         internal ContainerNode(AbstractNode parent) : base(parent) {
         }
@@ -14,31 +14,39 @@ namespace Kedja.Node {
         }
 
         public IContainerNode AddStep<T>() where T : IStep {
-            return AddStep(WorkFlowContext.TypeFactory.Create<T>());
+            var node = new LeafNode(this, () => WorkFlowContext.TypeFactory.Create<T>());
+            _nodes.Add(node);
+            return this;
         }
 
         public IContainerNode AddStep(Action perform) {
-            return AddStep(new DelegateStep(perform));
+            var node = new LeafNode(this, () => new DelegateStep(perform));
+            _nodes.Add(node);
+            return this;
         }
 
         public IContainerNode AddStep(IStep instance) {
-            var node = new LeafNode(instance, this);
+            var node = new LeafNode(this, () => instance);
             _nodes.Add(node);
             return this;
         }
 
         public IContainerNode AddStep<T, TReturn>(Action<IBranchNode<TReturn>> branch) where T : IStep<TReturn> {
-            return AddStep<T, TReturn>(WorkFlowContext.TypeFactory.Create<T>(), branch);
+            var node = new BranchNode<TReturn>(this, () => WorkFlowContext.TypeFactory.Create<T>(), branch);
+            _nodes.Add(node);
+            return this;
         }
 
         public IContainerNode AddStep<T, TReturn>(IStep<TReturn> instance, Action<IBranchNode<TReturn>> branch) {
-            var node = new BranchNode<TReturn>(this, instance, branch);
+            var node = new BranchNode<TReturn>(this, () => instance, branch);
             _nodes.Add(node);
             return this;
         }
 
         public IContainerNode AddStep<TReturn>(Func<TReturn> perform, Action<IBranchNode<TReturn>> branch) {
-            return AddStep<DelegateStep<TReturn>, TReturn>(new DelegateStep<TReturn>(perform), branch);
+            var node = new BranchNode<TReturn>(this, () => new DelegateStep<TReturn>(perform), branch);
+            _nodes.Add(node);
+            return this;        
         }
 
         public override void Execute() {
