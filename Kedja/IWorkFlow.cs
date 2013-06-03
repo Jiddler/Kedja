@@ -18,6 +18,9 @@ namespace Kedja {
         IWorkFlow<TState> AddStatelessStep<T>() where T : IStatelessStep;
         IWorkFlow<TState> AddStatelessStep<T, TReturn>(IStatelessStep<TReturn> instance, Action<IBranchNode<TState, TReturn>> branch);
 
+        IWorkFlow<TState> AddWorkFlow(IWorkFlowBuilder<TState> builder);
+        IWorkFlow<TState> AddWorkFlow<T>() where T : IWorkFlowBuilder<TState>;
+
         IWorkFlow<TState> Wait(int ms);
 
         void Execute();

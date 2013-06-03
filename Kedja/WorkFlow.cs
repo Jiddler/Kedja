@@ -75,8 +75,8 @@ namespace Kedja {
             return this;
         }
 
-        public IWorkFlow<TState> AddWorkFlow<T>(Func<T> builder) where T : IWorkFlowBuilder<TState>{
-            _rootNode.AddWorkFlow(builder);
+        public IWorkFlow<TState> AddWorkFlow<T>() where T : IWorkFlowBuilder<TState>{
+            _rootNode.AddWorkFlow<T>();
             return this;
         }
 

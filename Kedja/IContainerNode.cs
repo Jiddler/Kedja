@@ -19,7 +19,7 @@ namespace Kedja {
         IContainerNode<TState> AddLevel(Action<IContainerNode<TState>> branch);
         
         IContainerNode<TState> AddWorkFlow(IWorkFlowBuilder<TState> builder);
-        IContainerNode<TState> AddWorkFlow<T>(Func<T> builder) where T : IWorkFlowBuilder<TState>;
+        IContainerNode<TState> AddWorkFlow<T>() where T : IWorkFlowBuilder<TState>;
 
         IContainerNode<TState> Wait(int ms);
 

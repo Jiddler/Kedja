@@ -85,7 +85,7 @@ namespace Kedja.Node {
             return this;
         }
 
-        public IContainerNode<TState> AddWorkFlow<T>(Func<T> builder) where T : IWorkFlowBuilder<TState>{
+        public IContainerNode<TState> AddWorkFlow<T>() where T : IWorkFlowBuilder<TState>{
             _nodes.AddWorkFlowNode(() => WorkFlowContext.TypeFactory.Create<T>());
             return this;
         }
