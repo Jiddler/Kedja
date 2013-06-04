@@ -50,6 +50,7 @@
     <Compile Include="IWorkFlow.cs" />
     <Compile Include="IWorkflowBuilder.cs" />
     <Compile Include="Node\AbstractNode.cs" />
+    <Compile Include="Node\AbstractParentNode.cs" />
     <Compile Include="Node\BranchNode.cs" />
     <Compile Include="Node\BreakNode.cs" />
     <Compile Include="Node\ContainerNode.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Step\IStatelessStep.cs" />
     <Compile Include="Step\IStep.cs" />
     <Compile Include="Step\DelegateStep.cs" />
+    <Compile Include="Step\StatelessStepWrapper.cs" />
     <Compile Include="Utility\DictionaryList.cs" />
     <Compile Include="WorkFlow.cs" />
     <Compile Include="WorkflowCanceledException.cs" />

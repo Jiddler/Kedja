@@ -12,70 +12,49 @@ namespace Kedja.Node {
             _node = node;
         }
 
-        public WaitNode<TState> Wait(int ms) {
-            var node = new WaitNode<TState>(_node, ms);
+        private T AddNode<T>(T node) where T : INode {
             _nodes.Add(node);
-            return node;
+            return node;            
         }
 
-        public ContainerNode<TState> When(object when) {
-            var node = new ContainerNode<TState>(_node);
-            _nodes.Add(node);
-            return node;
+        public WaitNode<TState> Wait(int ms) {
+            return AddNode(new WaitNode<TState>(_node, ms));
         }
 
         public LeafNode<TState> AddLeafNode(Func<IStep<TState>> step) {
-            var node = new LeafNode<TState>(_node, step);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new LeafNode<TState>(_node, step));
         }
 
         public BranchNode<TState, T> AddBranchNode<T>(Func<IStep<TState, T>> func, Action<IBranchNode<TState, T>> branch) {
-            var node = new BranchNode<TState, T>(_node, func, branch);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new BranchNode<TState, T>(_node, func, branch));
         }
 
         public WaitNode<TState> AddWait(int ms) {
-            var node = new WaitNode<TState>(_node, ms);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new WaitNode<TState>(_node, ms));
         }
 
         public ContainerNode<TState> AddContainerNode() {
-            var node = new ContainerNode<TState>(_node);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new ContainerNode<TState>(_node));
         }
 
         public IContainerNode<TState> AddLevelNode(Action<IContainerNode<TState>> branch) {
-            var node = new LevelNode<TState>(_node, branch);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new LevelNode<TState>(_node, branch));
         }
 
         public RetryNode<TState> AddRetryNode(int maxRetries) {
-            var node = new RetryNode<TState>(_node, maxRetries);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new RetryNode<TState>(_node, maxRetries));
         }
 
         public BreakNode<TState> AddBreakNode(int levels) {
-            var node = new BreakNode<TState>(_node, levels);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new BreakNode<TState>(_node, levels));
         }
 
         public StopNode<TState> AddStop() {
-            var node = new StopNode<TState>(_node);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new StopNode<TState>(_node));
         }
 
         public WorkFlowNode<TState> AddWorkFlowNode(Func<IWorkFlowBuilder<TState>> builder) {
-            var node = new WorkFlowNode<TState>(_node, builder);
-            _nodes.Add(node);
-            return node;
+            return AddNode(new WorkFlowNode<TState>(_node, builder));
         }
 
         public IEnumerator<INode> GetEnumerator() {

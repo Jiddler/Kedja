@@ -158,8 +158,8 @@ namespace Kedja.Tests {
             var subStep1 = new GenericStep();
             var subStep2 = new GenericStep();
             _instance.AddLevel(branch => {
-                branch.AddStep(subStep1);
-                branch.Break(2);
+                    branch.AddStep(subStep1);
+                    branch.Break(2);
                 })
                 .AddStep(subStep2)
                 .Execute();
