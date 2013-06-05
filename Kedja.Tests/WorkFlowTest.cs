@@ -191,14 +191,7 @@ namespace Kedja.Tests {
             Assert.IsFalse(subStep1.Executed);
             Assert.IsFalse(subStep2.Executed);
         }
-
-        [TestMethod]
-        public void StatelessStep() {
-            var step = new StatelessStep();
-            _instance.AddStatelessStep(step).Execute();
-            Assert.IsTrue(step.Executed);
-        }
-
+        
         [TestMethod]
         public void SubWorkFlow() {
             var workFlowBuilder = new WorkFlowBuilder();
@@ -268,18 +261,6 @@ namespace Kedja.Tests {
 
         public void Cancel() {
             
-        }
-    }
-
-    public class StatelessStep : IStatelessStep {
-        public bool Executed { get; private set; }
-
-        public void Cancel() {
-            
-        }
-
-        public void Execute() {
-            Executed = true;
         }
     }
 }

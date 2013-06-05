@@ -49,26 +49,6 @@ namespace Kedja.Node {
             return Self;
         }
 
-        public TFluent AddStatelessStep(IStatelessStep step) {
-            Nodes.AddLeafNode(() => new StatelessStepWrapper<TState>(step));
-            return Self;
-        }
-
-        public TFluent AddStatelessStep<T>() where T : IStatelessStep {
-            Nodes.AddLeafNode(() => new StatelessStepWrapper<TState>(WorkFlowContext.TypeFactory.Create<T>()));
-            return Self;
-        }
-
-        public TFluent AddStatelessStep<T, TXReturn>(Action<IBranchNode<TState, TXReturn>> branch) where T : IStatelessStep<TXReturn> {
-            Nodes.AddBranchNode(() => new StatelessStepWrapper<TState, TXReturn>(WorkFlowContext.TypeFactory.Create<T>()), branch);
-            return Self;
-        }
-
-        public TFluent AddStatelessStep<T, TXReturn>(IStatelessStep<TXReturn> instance, Action<IBranchNode<TState, TXReturn>> branch) {
-            Nodes.AddBranchNode(() => new StatelessStepWrapper<TState, TXReturn>(instance), branch);
-            return Self;
-        }
-
         public TFluent Wait(int ms) {
             Nodes.AddWait(ms);
             return Self;

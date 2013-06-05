@@ -64,10 +64,8 @@
     <Compile Include="Node\RetryNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Step\ICancelableStep.cs" />
-    <Compile Include="Step\IStatelessStep.cs" />
     <Compile Include="Step\IStep.cs" />
     <Compile Include="Step\DelegateStep.cs" />
-    <Compile Include="Step\StatelessStepWrapper.cs" />
     <Compile Include="Utility\DictionaryList.cs" />
     <Compile Include="WorkFlow.cs" />
     <Compile Include="WorkflowCanceledException.cs" />

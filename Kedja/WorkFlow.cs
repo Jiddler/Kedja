@@ -49,27 +49,7 @@ namespace Kedja {
             _rootNode.AddStep(perform, branch);
             return this;
         }
-
-        public IWorkFlow<TState> AddStatelessStep(IStatelessStep step) {
-            _rootNode.AddStatelessStep(step);
-            return this;
-        }
-
-        public IWorkFlow<TState> AddStatelessStep<T>() where T : IStatelessStep {
-            _rootNode.AddStatelessStep<T>();
-            return this;
-        }
-
-        public IWorkFlow<TState> AddStatelessStep<T, TReturn>(IStatelessStep<TReturn> instance, Action<IBranchNode<TState, TReturn>> branch) {
-            _rootNode.AddStatelessStep<T, TReturn>(instance, branch);
-            return this;
-        }
-
-        public IWorkFlow<TState> AddStatelessStep<T, TReturn>(Action<IBranchNode<TState, TReturn>> branch) where T : IStatelessStep<TReturn> {
-            _rootNode.AddStatelessStep<T, TReturn>(branch);
-            return this;
-        }
-
+        
         public IWorkFlow<TState> AddWorkFlow(IWorkFlowBuilder<TState> builder) {
             _rootNode.AddWorkFlow(builder);
             return this;

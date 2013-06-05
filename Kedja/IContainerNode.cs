@@ -11,11 +11,6 @@ namespace Kedja {
         IContainerNode<TState> AddStep<TReturn>(Func<TState, TReturn> perform, Action<IBranchNode<TState, TReturn>> branch);
         IContainerNode<TState> AddStep<T, TReturn>(IStep<TState, TReturn> instance, Action<IBranchNode<TState, TReturn>> branch);
 
-        IContainerNode<TState> AddStatelessStep<T>() where T : IStatelessStep;
-        IContainerNode<TState> AddStatelessStep<T, TReturn>(IStatelessStep<TReturn> instance, Action<IBranchNode<TState, TReturn>> branch);
-        IContainerNode<TState> AddStatelessStep(IStatelessStep step);
-        IContainerNode<TState> AddStatelessStep<T, TXReturn>(Action<IBranchNode<TState, TXReturn>> branch) where T : IStatelessStep<TXReturn>;
-
         IContainerNode<TState> AddLevel(Action<IContainerNode<TState>> branch);
         
         IContainerNode<TState> AddWorkFlow(IWorkFlowBuilder<TState> builder);
