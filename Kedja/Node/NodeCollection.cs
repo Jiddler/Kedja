@@ -68,5 +68,9 @@ namespace Kedja.Node {
         public void Clear() {
             _nodes.Clear();
         }
+
+        public void AddRestart(AbstractNode<TState> target) {
+            AddNode(new RestartNode<TState>(_node, target));
+        }
     }
 }

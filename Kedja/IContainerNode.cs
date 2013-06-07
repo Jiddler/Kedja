@@ -21,5 +21,6 @@ namespace Kedja {
         void Retry(int maxRetries = 1);
         void Break(int levels = 1);
         void Stop();
+        void Restart();
     }
 }

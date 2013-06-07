@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Kedja.Extension;
 using Kedja.Step;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -198,6 +199,33 @@ namespace Kedja.Tests {
             _instance.AddWorkFlow(workFlowBuilder).Execute();
             Assert.IsTrue(workFlowBuilder.ExecutedStep);
         }
+
+        [TestMethod]
+        public void Restart_In_Container() {
+            var runs = 0;
+            _instance
+                .AddStep(state => runs++)
+                .AddStep(state => runs == 3, node => node.When(true).Stop())
+                .Restart()
+                .Execute();
+
+            Assert.AreEqual(3, runs);
+        }
+
+        [TestMethod]
+        public void Restart_In_Branch() {
+            var runs = 0;
+            _instance
+                .AddStep(state => runs++)
+                .AddStep(state => runs == 3,
+                    node => {
+                        node.When(true).Stop();
+                        node.Restart();
+                    })
+                .Execute();
+
+            Assert.AreEqual(3, runs);
+        }
     }
 
     public class WorkFlowBuilder : IWorkFlowBuilder<object> {
@@ -217,7 +245,7 @@ namespace Kedja.Tests {
     public class CancelableStep : IStep<object> {
         private readonly ManualResetEvent _sync = new ManualResetEvent(false);
 
-        public void Cancel() {
+        public void Cancel(object state) {
             _sync.Set();
         }
 
@@ -241,7 +269,7 @@ namespace Kedja.Tests {
             Executed = true;
         }
 
-        public void Cancel() {
+        public void Cancel(object state) {
             
         }
     }
@@ -259,7 +287,7 @@ namespace Kedja.Tests {
             return true;
         }
 
-        public void Cancel() {
+        public void Cancel(object state) {
             
         }
     }

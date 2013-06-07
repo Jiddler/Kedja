@@ -71,6 +71,11 @@ namespace Kedja {
             _rootNode.Cancel();
         }
 
+        public IWorkFlow<TState> Restart() {
+            _rootNode.Restart();
+            return this;
+        }
+
         public IWorkFlow<TState> Wait(int ms) {
             _rootNode.Wait(ms);
             return this;

@@ -22,5 +22,6 @@ namespace Kedja {
 
         void Execute();
         void Cancel();
+        IWorkFlow<TState> Restart();
     }
 }

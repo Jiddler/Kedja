@@ -20,5 +20,6 @@ namespace Kedja {
 
         void Stop();
         void Execute();
+        void Restart();
     }
 }

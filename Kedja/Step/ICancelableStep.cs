@@ -1,5 +1,5 @@
 namespace Kedja.Step {
-    public interface ICancelableStep {
-        void Cancel();        
+    public interface ICancelableStep<in TState> {
+        void Cancel(TState state);
     }
 }

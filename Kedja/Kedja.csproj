@@ -45,6 +45,7 @@
     <Compile Include="IContainerNode.cs" />
     <Compile Include="Instruction\BreakInstruction.cs" />
     <Compile Include="Instruction\IFlowInstruction.cs" />
+    <Compile Include="Instruction\RestartInstruction.cs" />
     <Compile Include="Instruction\RetryInstruction.cs" />
     <Compile Include="ITypeFactory.cs" />
     <Compile Include="IWorkFlow.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Node\BranchNode.cs" />
     <Compile Include="Node\BreakNode.cs" />
     <Compile Include="Node\ContainerNode.cs" />
+    <Compile Include="Node\RestartNode.cs" />
     <Compile Include="Node\WaitNode.cs" />
     <Compile Include="Node\LevelNode.cs" />
     <Compile Include="Node\NodeCollection.cs" />

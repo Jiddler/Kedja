@@ -15,26 +15,29 @@ namespace Kedja.Node {
         }
 
         public override void Execute() {
-            if(WorkFlowContext.Canceled)
-                throw new WorkflowCanceledException();
+            do {
+                if(WorkFlowContext.Canceled)
+                    throw new WorkflowCanceledException();
 
-            Nodes.Clear();
-            _branch(this);
+                WorkFlowContext.RemoveInstructions(this);
 
-            foreach(var step in Nodes) {
-                step.Execute();
+                Nodes.Clear();
+                _branch(this);
 
-                if(WorkFlowContext.HasInstruction<BreakInstruction>(this)) {
-                    break;
+                foreach(var step in Nodes) {
+                    step.Execute();
+
+                    if(WorkFlowContext.HasInstruction<BreakInstruction>(this)) {
+                        break;
+                    }
                 }
-            }
+            } while(WorkFlowContext.HasInstruction<RestartInstruction>(this));
 
             WorkFlowContext.RemoveInstructions(this);
         }
 
-        public IContainerNode<TState> AddLevel(Action<IContainerNode<TState>> branch) {
-            Nodes.AddLevelNode(branch);
-            return this;
+        public void Restart() {
+            Nodes.AddRestart(this);
         }
     }
 }

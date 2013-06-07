@@ -12,7 +12,7 @@ namespace Kedja.Step {
             _perform(state);
         }
 
-        public void Cancel() {}
+        public void Cancel(TState state) {}
     }
 
     internal class DelegateStep<TState, TReturn> : IStep<TState, TReturn> {
@@ -26,7 +26,7 @@ namespace Kedja.Step {
             return _perform(state);
         }
 
-        public void Cancel() {
+        public void Cancel(TState state) {
         }
     }
 }

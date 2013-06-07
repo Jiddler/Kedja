@@ -13,18 +13,26 @@ namespace Kedja.Node {
         }
 
         public override void Execute() {
-            if(WorkFlowContext.Canceled)
-                throw new WorkflowCanceledException();
+            do {
+                if(WorkFlowContext.Canceled)
+                    throw new WorkflowCanceledException();
 
-            foreach(var step in Nodes) {
-                step.Execute();
+                WorkFlowContext.RemoveInstructions(this);
 
-                if(WorkFlowContext.HasInstruction<BreakInstruction>(this)) {
-                    break;
+                foreach(var step in Nodes) {
+                    step.Execute();
+
+                    if(WorkFlowContext.HasInstruction<BreakInstruction>(this)) {
+                        break;
+                    }
                 }
-            }
+            } while(WorkFlowContext.HasInstruction<RestartInstruction>(this));
 
             WorkFlowContext.RemoveInstructions(this);
+        }
+
+        public void Restart() {
+            Nodes.AddRestart(this);
         }
     }
 }

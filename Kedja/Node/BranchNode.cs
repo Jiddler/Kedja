@@ -24,6 +24,10 @@ namespace Kedja.Node {
             return node;
         }
 
+        public void Restart() {
+            Nodes.AddRestart(Parent);
+        }
+
         public override void Execute() {
             _branch(this);
 
@@ -33,7 +37,7 @@ namespace Kedja.Node {
                 var step = _step();
                 var result = ExecuteStep(step);
                 ExecuteNodes(result);
-            } while(WorkFlowContext.HasInstruction<RetryInstruction>(this));
+            } while(WorkFlowContext.HasInstruction<RetryInstruction>(this) || WorkFlowContext.HasInstruction<RestartInstruction>(this));
 
             WorkFlowContext.RemoveInstructions(this);
         }

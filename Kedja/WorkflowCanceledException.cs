@@ -1,6 +1,6 @@
 ﻿using System;
 
 namespace Kedja {
-    internal class WorkflowCanceledException : Exception {
+    public class WorkflowCanceledException : Exception {
     }
 }
