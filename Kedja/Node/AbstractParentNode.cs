@@ -54,12 +54,12 @@ namespace Kedja.Node {
             return Self;
         }
 
-        public TFluent AddWorkFlow(IWorkFlowBuilder<TState> builder) {
-            Nodes.AddWorkFlowNode(() => builder);
+        public TFluent AddWorkFlow(IWorkFlowStep<TState> step) {
+            Nodes.AddWorkFlowNode(() => step);
             return Self;
         }
 
-        public TFluent AddWorkFlow<T>() where T : IWorkFlowBuilder<TState>{
+        public TFluent AddWorkFlow<T>() where T : IWorkFlowStep<TState>{
             Nodes.AddWorkFlowNode(() => WorkFlowContext.TypeFactory.Create<T>());
             return Self;
         }

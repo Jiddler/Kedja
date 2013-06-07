@@ -195,7 +195,7 @@ namespace Kedja.Tests {
         
         [TestMethod]
         public void SubWorkFlow() {
-            var workFlowBuilder = new WorkFlowBuilder();
+            var workFlowBuilder = new WorkFlowStep();
             _instance.AddWorkFlow(workFlowBuilder).Execute();
             Assert.IsTrue(workFlowBuilder.ExecutedStep);
         }
@@ -228,16 +228,16 @@ namespace Kedja.Tests {
         }
     }
 
-    public class WorkFlowBuilder : IWorkFlowBuilder<object> {
+    public class WorkFlowStep : IWorkFlowStep<object> {
         private readonly GenericStep _step;
 
         public bool ExecutedStep { get { return _step.Executed; } }
 
-        public WorkFlowBuilder() {
+        public WorkFlowStep() {
             _step = new GenericStep();
         }
 
-        public void Build(IContainerNode<object> workFlow) {
+        public void Execute(object state, IContainerNode<object> workFlow) {
             workFlow.AddStep(_step);
         }
     }

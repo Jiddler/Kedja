@@ -13,6 +13,8 @@ namespace Kedja.Node {
             get { return this; }
         }
 
+        public TReturn Result { get; private set; }
+
         public BranchNode(AbstractNode<TState> parent, Func<IStep<TState, TReturn>> step, Action<IBranchNode<TState, TReturn>> branch) : base(parent) {
             _step = step;
             _branch = branch;
@@ -35,8 +37,8 @@ namespace Kedja.Node {
                 WorkFlowContext.RemoveInstructions(this);
 
                 var step = _step();
-                var result = ExecuteStep(step);
-                ExecuteNodes(result);
+                Result = ExecuteStep(step);
+                ExecuteNodes();
             } while(WorkFlowContext.HasInstruction<RetryInstruction>(this) || WorkFlowContext.HasInstruction<RestartInstruction>(this));
 
             WorkFlowContext.RemoveInstructions(this);
@@ -54,12 +56,12 @@ namespace Kedja.Node {
             return stepResult;
         }
 
-        private void ExecuteNodes(TReturn result) {
+        private void ExecuteNodes() {
             if(WorkFlowContext.Canceled)
                 throw new WorkflowCanceledException();
 
             foreach(var node in Nodes) {
-                if(!ShouldExecuteNode(result, node))
+                if(!ShouldExecuteNode(Result, node))
                     continue;
 
                 node.Execute();
@@ -70,7 +72,8 @@ namespace Kedja.Node {
         }
 
         private bool ShouldExecuteNode(TReturn result, INode step) {
-            return !_conditions.ContainsKey(step) || _conditions[step](result);
+            Func<TReturn, bool> condition;
+            return !_conditions.TryGetValue(step, out condition) || condition(result);
         }
     }
 }

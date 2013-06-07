@@ -49,7 +49,7 @@
     <Compile Include="Instruction\RetryInstruction.cs" />
     <Compile Include="ITypeFactory.cs" />
     <Compile Include="IWorkFlow.cs" />
-    <Compile Include="IWorkflowBuilder.cs" />
+    <Compile Include="IWorkFlowStep.cs" />
     <Compile Include="Node\AbstractNode.cs" />
     <Compile Include="Node\AbstractParentNode.cs" />
     <Compile Include="Node\BranchNode.cs" />

@@ -50,12 +50,12 @@ namespace Kedja {
             return this;
         }
         
-        public IWorkFlow<TState> AddWorkFlow(IWorkFlowBuilder<TState> builder) {
-            _rootNode.AddWorkFlow(builder);
+        public IWorkFlow<TState> AddWorkFlow(IWorkFlowStep<TState> step) {
+            _rootNode.AddWorkFlow(step);
             return this;
         }
 
-        public IWorkFlow<TState> AddWorkFlow<T>() where T : IWorkFlowBuilder<TState>{
+        public IWorkFlow<TState> AddWorkFlow<T>() where T : IWorkFlowStep<TState>{
             _rootNode.AddWorkFlow<T>();
             return this;
         }

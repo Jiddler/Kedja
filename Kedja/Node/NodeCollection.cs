@@ -53,7 +53,7 @@ namespace Kedja.Node {
             return AddNode(new StopNode<TState>(_node));
         }
 
-        public WorkFlowNode<TState> AddWorkFlowNode(Func<IWorkFlowBuilder<TState>> builder) {
+        public WorkFlowNode<TState> AddWorkFlowNode(Func<IWorkFlowStep<TState>> builder) {
             return AddNode(new WorkFlowNode<TState>(_node, builder));
         }
 
