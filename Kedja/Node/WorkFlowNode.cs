@@ -10,7 +10,17 @@ namespace Kedja.Node {
 
         public override void Execute() {
             var node = new ContainerNode<TState>(this);
-            _builder().Execute(WorkFlowContext.State, node);
+
+            var step = _builder();
+
+            var result = WorkFlowContext.Lock(() => WorkFlowContext.Path.AddLast(step));
+            if(!result) {
+                return;
+            }
+
+            step.Execute(WorkFlowContext.State, node);
+            WorkFlowContext.Path.RemoveLast();
+
             node.Execute();
         }
     }

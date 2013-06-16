@@ -201,6 +201,16 @@ namespace Kedja.Tests {
         }
 
         [TestMethod]
+        public void Cancel_SubWorkFlow() {
+            Task.Factory.StartNew(() => {
+                Thread.Sleep(100);
+                _instance.Cancel();
+            });
+
+            _instance.AddWorkFlow(new CancelableWorkFlowStep()).Execute();
+        }
+
+        [TestMethod]
         public void Restart_In_Container() {
             var runs = 0;
             _instance
@@ -239,6 +249,29 @@ namespace Kedja.Tests {
 
         public void Execute(object state, IContainerNode<object> workFlow) {
             workFlow.AddStep(_step);
+        }
+
+        public void Cancel(object state) {
+        }
+    }
+
+    public class CancelableWorkFlowStep : IWorkFlowStep<object> {
+        private readonly GenericStep _step;
+        private readonly ManualResetEvent _sync = new ManualResetEvent(false);
+
+        public bool ExecutedStep { get { return _step.Executed; } }
+
+        public CancelableWorkFlowStep() {
+            _step = new GenericStep();
+        }
+
+        public void Execute(object state, IContainerNode<object> workFlow) {
+            workFlow.AddStep(_step);
+            _sync.WaitOne();
+        }
+
+        public void Cancel(object state) {
+            _sync.Set();
         }
     }
 
