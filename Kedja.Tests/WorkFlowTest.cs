@@ -40,6 +40,30 @@ namespace Kedja.Tests {
         }
 
         [TestMethod]
+        public void Otherwise_Not_Matched() {
+            var step2 = new GenericStep();
+            var step3 = new GenericStep();
+            _instance.AddStep<GenericStep, bool>(branch => {
+                branch.When(false).AddStep(step3);
+                branch.Otherwise().AddStep(step2);
+            }).Execute();
+            Assert.IsTrue(step2.Executed);
+            Assert.IsFalse(step3.Executed);
+        }
+
+        [TestMethod]
+        public void Otherwise_Matched() {
+            var step2 = new GenericStep();
+            var step3 = new GenericStep();
+            _instance.AddStep<GenericStep, bool>(branch => {
+                branch.When(true).AddStep(step3);
+                branch.Otherwise().AddStep(step2);
+            }).Execute();
+            Assert.IsFalse(step2.Executed);
+            Assert.IsTrue(step3.Executed);
+        }
+
+        [TestMethod]
         public void State_Object_Passed_On_Execution() {
             object calledWithState = null;
             _instance.AddStep(state => calledWithState = state).Execute();

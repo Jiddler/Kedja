@@ -6,6 +6,7 @@ namespace Kedja {
         TReturn Result { get; }
 
         IContainerNode<TState> When(Func<TReturn, bool> when);
+        IContainerNode<TState> Otherwise();
 
         IBranchNode<TState, TReturn> AddStep<T>() where T : IStep<TState>;
         IBranchNode<TState, TReturn> AddStep(IStep<TState> instance);

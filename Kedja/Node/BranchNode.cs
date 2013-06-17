@@ -27,6 +27,15 @@ namespace Kedja.Node {
             return node;
         }
 
+        public IContainerNode<TState> Otherwise() {
+            var node = Nodes.AddContainerNode();
+
+            var nodesWithConditions = Nodes.Intersect(_conditions.Keys).ToList();
+            _conditions.Add(node, result => !nodesWithConditions.Any(n => _conditions[n](result)));
+            
+            return node;
+        }
+
         public void Restart(int maxRestarts = -1) {
             Nodes.AddRestart(Parent, maxRestarts);
         }
