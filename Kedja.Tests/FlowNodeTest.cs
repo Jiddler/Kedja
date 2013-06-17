@@ -1,5 +1,6 @@
 ﻿using System;
 using Kedja.Extension;
+using Kedja.Tests.Step;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Kedja.Tests {

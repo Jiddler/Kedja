@@ -57,14 +57,14 @@
   <ItemGroup>
     <Compile Include="AbstractWorkFlowTest.cs" />
     <Compile Include="BranchTest.cs" />
-    <Compile Include="CancelableStep.cs" />
-    <Compile Include="CancelableWorkFlowStep.cs" />
     <Compile Include="FlowNodeTest.cs" />
-    <Compile Include="GenericStep.cs" />
     <Compile Include="InstructionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RetryableStep.cs" />
-    <Compile Include="WorkFlowStep.cs" />
+    <Compile Include="Step\CancelableStep.cs" />
+    <Compile Include="Step\CancelableWorkFlowStep.cs" />
+    <Compile Include="Step\GenericStep.cs" />
+    <Compile Include="Step\RetryableStep.cs" />
+    <Compile Include="Step\WorkFlowStep.cs" />
     <Compile Include="WorkflowStepTest.cs" />
     <Compile Include="WorkFlowTest.cs" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Kedja.Extension;
+using Kedja.Tests.Step;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

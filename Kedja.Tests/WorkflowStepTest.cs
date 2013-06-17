@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Kedja.Tests.Step;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Kedja.Tests {
