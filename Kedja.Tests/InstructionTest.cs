@@ -25,7 +25,7 @@ namespace Kedja.Tests {
                 .AddStep(state => runs == 3,
                     node => {
                         node.When(true).Stop();
-                        node.Restart();
+                        node.Restart(levels: 1);
                     })
                 .Execute();
 

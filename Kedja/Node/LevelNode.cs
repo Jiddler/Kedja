@@ -37,9 +37,5 @@ namespace Kedja.Node {
 
             WorkFlowContext.RemoveInstructions(this);
         }
-
-        public void Restart(int maxRestarts = -1) {
-            Nodes.AddRestart(this, maxRestarts);
-        }
     }
 }

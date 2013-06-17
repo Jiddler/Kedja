@@ -23,6 +23,6 @@ namespace Kedja {
 
         void Stop();
         void Execute();
-        void Restart(int maxRestarts = -1);
+        void Restart(int maxRestarts = -1, int levels = 0);
     }
 }

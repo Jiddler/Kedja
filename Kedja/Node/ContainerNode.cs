@@ -1,3 +1,4 @@
+using System;
 using Kedja.Instruction;
 
 namespace Kedja.Node {
@@ -29,10 +30,6 @@ namespace Kedja.Node {
             } while(WorkFlowContext.HasInstruction<RestartInstruction>(this));
 
             WorkFlowContext.RemoveInstructions(this);
-        }
-
-        public void Restart(int maxRestarts = -1) {
-            Nodes.AddRestart(this, maxRestarts);
         }
     }
 }

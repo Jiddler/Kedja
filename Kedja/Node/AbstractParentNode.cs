@@ -75,5 +75,23 @@ namespace Kedja.Node {
         public void Stop() {
             Nodes.AddStop();
         }
+
+        public void Restart(int maxRestarts = -1, int levels = 0) {
+            var target = FindNodeNLevelsUp(levels);
+            Nodes.AddRestart(target, maxRestarts);
+        }
+
+        protected AbstractNode<TState> FindNodeNLevelsUp(int levels) {
+            AbstractNode<TState> current = this;
+            for(int i = 0; i <= levels && current != null; i++) {
+                if(i == levels) {
+                    return current;
+                }
+
+                current = current.Parent;
+            }
+
+            throw new Exception("Level stepped out from workflow");
+        }
     }
 }

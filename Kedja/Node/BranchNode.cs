@@ -35,11 +35,7 @@ namespace Kedja.Node {
             
             return node;
         }
-
-        public void Restart(int maxRestarts = -1) {
-            Nodes.AddRestart(Parent, maxRestarts);
-        }
-
+        
         public override void Execute() {
             _branch(this);
 
