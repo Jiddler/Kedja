@@ -65,12 +65,8 @@ namespace Kedja.Node {
             return GetEnumerator();
         }
 
-        public void Clear() {
-            _nodes.Clear();
-        }
-
-        public void AddRestart(AbstractNode<TState> target) {
-            AddNode(new RestartNode<TState>(_node, target));
+        public void AddRestart(AbstractNode<TState> target, int maxRestarts) {
+            AddNode(new RestartNode<TState>(_node, target, maxRestarts));
         }
     }
 }

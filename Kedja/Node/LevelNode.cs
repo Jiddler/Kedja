@@ -15,14 +15,16 @@ namespace Kedja.Node {
         }
 
         public override void Execute() {
+            if(WorkFlowContext.Canceled)
+                throw new WorkflowCanceledException();
+
+            _branch(this);
+
             do {
                 if(WorkFlowContext.Canceled)
                     throw new WorkflowCanceledException();
 
                 WorkFlowContext.RemoveInstructions(this);
-
-                Nodes.Clear();
-                _branch(this);
 
                 foreach(var step in Nodes) {
                     step.Execute();
@@ -36,8 +38,8 @@ namespace Kedja.Node {
             WorkFlowContext.RemoveInstructions(this);
         }
 
-        public void Restart() {
-            Nodes.AddRestart(this);
+        public void Restart(int maxRestarts = -1) {
+            Nodes.AddRestart(this, maxRestarts);
         }
     }
 }

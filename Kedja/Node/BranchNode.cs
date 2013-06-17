@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kedja.Instruction;
 using Kedja.Step;
 
@@ -26,8 +27,8 @@ namespace Kedja.Node {
             return node;
         }
 
-        public void Restart() {
-            Nodes.AddRestart(Parent);
+        public void Restart(int maxRestarts = -1) {
+            Nodes.AddRestart(Parent, maxRestarts);
         }
 
         public override void Execute() {

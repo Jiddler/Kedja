@@ -6,7 +6,7 @@ namespace Kedja {
         TReturn Result { get; }
 
         IContainerNode<TState> When(Func<TReturn, bool> when);
-        
+
         IBranchNode<TState, TReturn> AddStep<T>() where T : IStep<TState>;
         IBranchNode<TState, TReturn> AddStep(IStep<TState> instance);
         IBranchNode<TState, TReturn> AddStep(Action<TState> perform);
@@ -22,6 +22,6 @@ namespace Kedja {
 
         void Stop();
         void Execute();
-        void Restart();
+        void Restart(int maxRestarts = -1);
     }
 }

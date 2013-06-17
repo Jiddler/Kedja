@@ -30,6 +30,16 @@ namespace Kedja.Tests {
         }
 
         [TestMethod]
+        public void Max_Restarts() {
+            var step1 = new GenericStep();
+            _instance.AddLevel(branch => {
+                                   branch.AddStep(step1);
+                                   branch.Restart(3);
+                               }).Execute();
+            Assert.AreEqual(3, step1.ExecutedCount);
+        }
+
+        [TestMethod]
         public void State_Object_Passed_On_Execution() {
             object calledWithState = null;
             _instance.AddStep(state => calledWithState = state).Execute();
@@ -290,7 +300,7 @@ namespace Kedja.Tests {
     public class GenericStep : IStep<object>, IStep<object, bool> {
         public bool Executed { get; set; }
 
-        protected int ExecutedCount { get; private set; }
+        public int ExecutedCount { get; private set; }
 
         bool IStep<object, bool>.Execute(object state) {
             Execute(state);
