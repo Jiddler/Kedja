@@ -108,5 +108,12 @@ namespace Kedja.Tests {
 
             Assert.IsFalse(instance.Executed);
         }
+
+        [TestMethod]
+        public void Add_Steps_While_Executing() {
+            var step = new GenericStep();
+            Instance.AddLevel(level => Instance.AddStep(step)).Execute();
+            Assert.IsTrue(step.Executed);
+        }
     }
 }

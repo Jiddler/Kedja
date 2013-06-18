@@ -58,7 +58,13 @@ namespace Kedja.Node {
         }
 
         public IEnumerator<INode> GetEnumerator() {
-            return _nodes.GetEnumerator();
+            if(_nodes.Count == 0)
+                yield break;
+
+            var i = 0;
+            while(i < _nodes.Count) {
+                yield return _nodes[i++];
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
