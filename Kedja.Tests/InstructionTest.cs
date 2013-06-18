@@ -22,11 +22,10 @@ namespace Kedja.Tests {
             int runs = 0;
             Instance
                 .AddStep(state => runs++)
-                .AddStep(state => runs == 3,
-                    node => {
-                        node.When(true).Stop();
-                        node.Restart(levels: 1);
-                    })
+                .AddStep(state => runs == 3, node => {
+                    node.When(true).Stop();
+                    node.Restart(levels: 1);
+                })
                 .Execute();
 
             Assert.AreEqual(3, runs);
