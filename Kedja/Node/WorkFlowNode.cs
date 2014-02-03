@@ -19,9 +19,9 @@ namespace Kedja.Node {
             }
 
             step.Execute(WorkFlowContext.State, node);
-            WorkFlowContext.Path.RemoveLast();
-
             node.Execute();
+
+            WorkFlowContext.Path.RemoveLast();
         }
     }
 }

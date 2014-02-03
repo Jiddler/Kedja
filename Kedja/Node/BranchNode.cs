@@ -45,6 +45,8 @@ namespace Kedja.Node {
                 var step = _step();
                 Result = ExecuteStep(step);
                 ExecuteNodes();
+                
+                WorkFlowContext.Path.RemoveLast();
             } while(WorkFlowContext.HasInstruction<RetryInstruction>(this) || WorkFlowContext.HasInstruction<RestartInstruction>(this));
 
             WorkFlowContext.RemoveInstructions(this);
@@ -56,10 +58,7 @@ namespace Kedja.Node {
                 return default(TReturn);
             }
 
-            var stepResult = step.Execute(WorkFlowContext.State);
-            WorkFlowContext.Path.RemoveLast();
-
-            return stepResult;
+            return step.Execute(WorkFlowContext.State);
         }
 
         private void ExecuteNodes() {

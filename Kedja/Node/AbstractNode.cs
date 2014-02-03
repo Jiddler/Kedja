@@ -32,8 +32,9 @@ namespace Kedja.Node {
             WorkFlowContext.Canceled = true;
 
             var current = WorkFlowContext.Path.Last;
-            if(current != null) {
+            while(current != null) {
                 current.Value.Cancel(WorkFlowContext.State);
+                current = current.Previous;
             }
         }
 
